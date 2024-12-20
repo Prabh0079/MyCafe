@@ -8,14 +8,21 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State var showSplash: Bool = true
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        if showSplash{
+            Splashscreen()
+                .onAppear(){
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3){
+                        withAnimation {
+                            showSplash = false
+                        }
+                    }
+                }
+        } else {
+            SignUp()
         }
-        .padding()
+        
     }
 }
 

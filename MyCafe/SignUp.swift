@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import Firebase
+import FirebaseAuth
 
 struct SignUp: View {
     @State var username: String = ""
@@ -15,6 +17,9 @@ struct SignUp: View {
     @State var ispasswordvisible: Bool = false
     @State var isconfirmpasswordvisible: Bool = false
     @State var istermsaccepted: Bool = false
+    @State var showalert: Bool = false
+    @State var alertMsg: String = ""
+    @State var navigateToSignIn: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -81,7 +86,7 @@ struct SignUp: View {
                 }
                 .padding()
                 
-                Button(action:{})
+                Button(action: {registerUser()})
                 {
                     Text("Sign Up")
                         .foregroundColor(.white)
@@ -94,17 +99,115 @@ struct SignUp: View {
                 HStack {
                     Text("Got a Profile")
                         .italic()
-                    NavigationLink(destination: Splashscreen()){
+                    
+                    NavigationLink(destination: Splashscreen(), isActive: $navigateToSignIn){
                         Text("Sign In")
                             .foregroundStyle(.brown)
                             .bold()
                     }
                 }
+                Spacer()
+                
+                NavigationLink(destination: Splashscreen()) {
+                    HStack {
+                        Text("By registering, I acknowledge that I have read and accept all terms and conditions of use and the ")
+                            .foregroundColor(.black)
+                        + Text("Privacy Policy")
+                            .foregroundColor(.brown)
+                    }
+                }
             }
             .padding()
         }
-      }
+    //.frame(width: .infinity, height: .infinity)
+        .alert(isPresented: $showalert)
+            {
+                Alert(title: Text("Registration Error"),
+                      message: Text(alertMsg),
+                      dismissButton: .default(Text("Ok")))
+            }
+            .navigationDestination(isPresented: $navigateToSignIn){
+                Splashscreen()
+            }
+        }
     }
+    
+    func registerUser()
+    {
+        showalert = false
+        alertMsg = ""
+        
+        if username.isEmpty {
+            showalert(messege: "User Name is required")
+            return
+        }
+        if email.isEmpty {
+            showalert(messege: "Email is required")
+            return
+        }
+        if password.isEmpty {
+            showalert(messege: "Password is required")
+            return
+        }
+        else if password.count < 8 {
+            showalert(messege: "password should be more than 8 characters")
+            return
+        }
+        if confirmpassword.isEmpty {
+            showalert(messege: "Please Confirm your password")
+            return
+        }
+        else if confirmpassword != confirmpassword {
+            showalert(messege: "Passwords do not match")
+            return
+        }
+        if !istermsaccepted {
+            showalert(messege: "Please accept the term and conditions")
+            return
+        }
+        
+        Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
+            if let error = error as NSError? {
+                DispatchQueue.main.async {
+                    let errorCode = error.code
+                    switch errorCode {
+                    case AuthErrorCode.emailAlreadyInUse.rawValue:
+                        showalert(messege: "The email address is already in use.")
+                    case AuthErrorCode.weakPassword.rawValue:
+                        showalert(messege: "The password is too weak")
+                    default:
+                        showalert(messege: error.localizedDescription)
+                    }
+                }
+                return
+            }
+    
+                // Send email
+            DispatchQueue.main.async {
+                if let user = authResult?.user {
+                    user.sendEmailVerification { error in
+                        if let error = error {
+                            showalert(messege: "Failed to send verification email: \(error.localizedDescription)")
+                                                       return
+                        }
+                        print("send creation Started")
+                        
+                        let userId = user.uid
+                       // var newuser = Users
+                    }
+                }
+            }
+            
+        }
+        print("user registered successfully")
+    }
+    
+    func showalert(messege: String)
+    {
+        alertMsg = messege
+        showalert = true
+    }
+    
 }
 
 #Preview {

@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CE90053F2D14BE6700D1FEFC /* GoogleService-Info-4.plist in Resources */ = {isa = PBXBuildFile; fileRef = CE90053E2D14BE6700D1FEFC /* GoogleService-Info-4.plist */; };
+		CE90053F2D14BE6700D1FEFC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CE90053E2D14BE6700D1FEFC /* GoogleService-Info.plist */; };
 		CE9005422D14BF9C00D1FEFC /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = CE9005412D14BF9C00D1FEFC /* FirebaseAuth */; };
 		CE9005442D14BF9C00D1FEFC /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = CE9005432D14BF9C00D1FEFC /* FirebaseCore */; };
 		CE9005462D14BF9C00D1FEFC /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = CE9005452D14BF9C00D1FEFC /* FirebaseDatabase */; };
@@ -36,7 +36,7 @@
 		CE9005112D14BB4500D1FEFC /* MyCafe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyCafe.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9005212D14BB4800D1FEFC /* MyCafeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyCafeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE90052B2D14BB4800D1FEFC /* MyCafeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyCafeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		CE90053E2D14BE6700D1FEFC /* GoogleService-Info-4.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info-4.plist"; sourceTree = "<group>"; };
+		CE90053E2D14BE6700D1FEFC /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -90,7 +90,7 @@
 		CE9005082D14BB4500D1FEFC = {
 			isa = PBXGroup;
 			children = (
-				CE90053E2D14BE6700D1FEFC /* GoogleService-Info-4.plist */,
+				CE90053E2D14BE6700D1FEFC /* GoogleService-Info.plist */,
 				CE9005132D14BB4500D1FEFC /* MyCafe */,
 				CE9005242D14BB4800D1FEFC /* MyCafeTests */,
 				CE90052E2D14BB4800D1FEFC /* MyCafeUITests */,
@@ -236,7 +236,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE90053F2D14BE6700D1FEFC /* GoogleService-Info-4.plist in Resources */,
+				CE90053F2D14BE6700D1FEFC /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

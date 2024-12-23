@@ -193,7 +193,17 @@ struct SignUp: View {
                         print("send creation Started")
                         
                         let userId = user.uid
-                       // var newuser = Users
+                        var newuser = Users.init(userId: userId, username: username, email: email)
+                     
+                        UserService().registerUser(_user: newuser) { success in
+                                               if success {
+                                                   showalert(messege: "User registered successfully. Please verify your email.")
+                                                   navigateToSignIn = true
+                                               } else {
+                                                   showalert(messege: "Failed to register user in the system.")
+                                               }
+                        
+                        }
                     }
                 }
             }

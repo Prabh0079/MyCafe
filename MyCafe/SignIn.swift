@@ -24,6 +24,7 @@ struct SignIn: View {
                 .resizable()
                 .scaledToFit()
                 .frame(maxWidth: 150, maxHeight:150)
+                .padding(.top,20)
             Text("my")
                 .font(.system(size: 28))
                 .italic()
@@ -31,6 +32,12 @@ struct SignIn: View {
                 .bold()
                 .font(.system(size: 28))
                 .italic()
+               
+              Text("Behind every successful person is good amount of coffee. So choose"
+                  + " best grains, finest roast, the most powerful flavor....")
+                  .font(.system(size: 20))
+                  .padding(10)
+              
             VStack {
                 TextField("Email Address",text: $email)
                     .padding()
@@ -72,7 +79,7 @@ struct SignIn: View {
                         .background(Color.black.opacity(0.6))
                         .cornerRadius(10)
                 }
-                .padding(.top,20)
+                .padding(.top,50)
                 
                 HStack {
                     Text("First Visit?")
@@ -82,6 +89,7 @@ struct SignIn: View {
                             .underline()
                     }
                 }
+                Spacer()
             }
             .padding()
         }

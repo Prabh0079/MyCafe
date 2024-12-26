@@ -25,7 +25,6 @@ struct Splashscreen: View {
                    + Text("Cafe")
                        .bold()
                        .font(.system(size: 36))
-                       .bold()
                        .italic()
                }
                .frame(width: .infinity, height: .infinity)

@@ -52,7 +52,7 @@ struct SignUp: View {
                     Button(action: {ispasswordvisible.toggle()}) {
                         Image(systemName:ispasswordvisible ? "eye" : "eye.slash")
                             .padding()
-                            .font(.system(size: 25))
+                            .font(.system(size: 20))
                             .foregroundStyle(Color.black)
                     }
                 }
@@ -70,7 +70,7 @@ struct SignUp: View {
                     Button(action:{isconfirmpasswordvisible.toggle()}){
                         Image(systemName:isconfirmpasswordvisible ? "eye" : "eye.slash")
                             .padding()
-                            .font(.system(size: 25))
+                            .font(.system(size: 20))
                             .foregroundStyle(Color.black)
                     }
                 }
@@ -219,7 +219,13 @@ struct SignUp: View {
     }
     
 }
-
 #Preview {
     SignUp()
 }
+
+
+//struct SignUp_PreViews: PreviewProvider {
+//    static var previews: some View {
+//        SignUp()
+//    }
+//}

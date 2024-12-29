@@ -64,7 +64,7 @@ struct SignIn: View {
                     
                     HStack {
                         Text("Forgot Password?")
-                        NavigationLink(destination:Splashscreen())
+                        NavigationLink(destination: ForgotPassword())
                         {
                             Text("Reset Here..")
                                 .foregroundColor(.brown)
@@ -126,7 +126,7 @@ struct SignIn: View {
             showAlert(message: "Password is required")
             return
         } else if password.count < 8 {
-            showAlert(message: "Password should bemore than 8 characters")
+            showAlert(message: "Password should be more than 8 characters")
             return
         } else if !Utils.isPasswordValid(password) {
             showAlert(message: "Password must contain atleast one letter and digit")
@@ -149,7 +149,7 @@ struct SignIn: View {
             
             let user = authResult.user
             
-            if user.emailVerified() {
+            if user.isEmailVerified {
                 print("User id: \(user.uid)")
                 
                 SessionManager.shared.loginUser(userId: user.uid) { success in

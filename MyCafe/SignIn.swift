@@ -19,109 +19,155 @@ struct SignIn: View {
     
     var body: some View {
         NavigationStack {
-          VStack {
-            Image(.cafee)
-                .resizable()
-                .scaledToFit()
-                .frame(maxWidth: 150, maxHeight:150)
-                .padding(.top,20)
-            Text("my")
-                .font(.system(size: 28))
-                .italic()
-            + Text("Cafe")
-                .bold()
-                .font(.system(size: 28))
-                .italic()
-               
-              Text("Behind every successful person is good amount of coffee. So choose"
-                  + " best grains, finest roast, the most powerful flavor....")
-                  .font(.system(size: 20))
-                  .padding(10)
-              
             VStack {
-                TextField("Email Address",text: $email)
-                    .padding()
+                Image(.cafee)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: 150, maxHeight:150)
+                    .padding(.top,20)
+                Text("my")
+                    .font(.system(size: 28))
+                    .italic()
+                + Text("Cafe")
+                    .bold()
+                    .font(.system(size: 28))
+                    .italic()
+                
+                Text("Behind every successful person is good amount of coffee. So choose"
+                     + " best grains, finest roast, the most powerful flavor....")
+                .font(.system(size: 16))
+                .padding(10)
+                .padding(.horizontal,15)
+                
+                VStack {
+                    TextField("Email Address",text: $email)
+                        .padding()
+                        .background(.gray.opacity(0.5))
+                        .cornerRadius(10)
+                    HStack {
+                        if isPasswordVisible {
+                            TextField("Enter Password",text: $password)
+                                .padding()
+                        } else {
+                            SecureField("Enter Password",text: $password)
+                                .padding()
+                        }
+                        Button(action:{isPasswordVisible.toggle()})
+                        {
+                            Image(systemName:isPasswordVisible ? "eye" : "eye.slash")
+                                .padding()
+                                .foregroundColor(.black)
+                        }
+                    }
                     .background(.gray.opacity(0.5))
                     .cornerRadius(10)
-                HStack {
-                    if isPasswordVisible {
-                        TextField("Enter Password",text: $password)
-                            .padding()
-                    } else {
-                        SecureField("Enter Password",text: $password)
-                            .padding()
+                    
+                    HStack {
+                        Text("Forgot Password?")
+                        NavigationLink(destination:Splashscreen())
+                        {
+                            Text("Reset Here..")
+                                .foregroundColor(.brown)
+                                .underline()
+                        }
                     }
-                    Button(action:{isPasswordVisible.toggle()})
+                    Button(action:{loginUser()})
                     {
-                        Image(systemName:isPasswordVisible ? "eye" : "eye.slash")
+                        Text("SignIn")
+                            .foregroundColor(.white)
                             .padding()
-                            .foregroundColor(.black)
+                            .frame(maxWidth: .infinity)
+                            .background(Color.black.opacity(0.6))
+                            .cornerRadius(10)
                     }
-                }
-                .background(.gray.opacity(0.5))
-                .cornerRadius(10)
-                
-                HStack {
-                    Text("Forgot Password?")
-                    NavigationLink(destination:Splashscreen())
-                    {
-                        Text("Reset Here..")
-                            .foregroundColor(.brown)
-                            .underline()
+                    .padding(.top,50)
+                    
+                    HStack {
+                        Text("First Visit?")
+                        NavigationLink(destination: SignUp()) {
+                            Text("Register yourself")
+                                .foregroundColor(.brown)
+                                .underline()
+                        }
                     }
+                    Spacer()
                 }
-                Button(action:{loginUser()})
-                {
-                    Text("SignIn")
-                        .foregroundColor(.white)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.black.opacity(0.6))
-                        .cornerRadius(10)
-                }
-                .padding(.top,50)
-                
-                HStack {
-                    Text("First Visit?")
-                    NavigationLink(destination: SignUp()) {
-                        Text("Register yourself")
-                            .foregroundColor(.brown)
-                            .underline()
-                    }
-                }
-                Spacer()
+                .padding()
             }
-            .padding()
-        }
-          .alert(isPresented: $showalert){
-              Alert(
-                title: Text("Invalid Email or Password"),
-                message: Text(AlertMsg),
-                dismissButton: .default(Text("Ok"))
-              )
-          }
-          .navigationBarBackButtonHidden(true)
-          .navigationBarHidden(true)
-          .fullScreenCover(isPresented: $navigateToHomeScreen)
+            .alert(isPresented: $showalert){
+                Alert(
+                    title: Text("Invalid Email or Password"),
+                    message: Text(AlertMsg),
+                    dismissButton: .default(Text("Ok"))
+                )
+            }
+            .fullScreenCover(isPresented: $navigateToHomeScreen)
             {
                 Splashscreen()
                     .onDisappear {
                         navigateToHomeScreen = false
                     }
             }
-      }
-        .navigationBarBackButtonHidden(true)
-        .navigationBarHidden(true)
-    }
-    
-    func showalert(messege: String)
-    {
-        AlertMsg = messege
-        showalert = true
+        }
     }
     
     func loginUser() {
         
+        if email.isEmpty {
+            showAlert(message: "Email is required")
+            return
+        } else if !Utils.isValidEmail(email)
+        {
+            showAlert(message: "Invalid email adddress")
+            return
+        }
+        
+        if password.isEmpty {
+            showAlert(message: "Password is required")
+            return
+        } else if password.count < 8 {
+            showAlert(message: "Password should bemore than 8 characters")
+            return
+        } else if !Utils.isPasswordValid(password) {
+            showAlert(message: "Password must contain atleast one letter and digit")
+            return
+        }
+        
+        Auth.auth().signIn(withEmail: email, password: password) {
+            authResult, error in
+            if let error = error {
+                
+                print("Login error: \(error.localizedDescription)")
+                self.showAlert(message: error.localizedDescription)
+                return
+            }
+            
+            guard let authResult = authResult else {
+                self.showAlert(message: "Authentication failed, try later")
+                return
+            }
+            
+            let user = authResult.user
+            
+            if user.emailVerified() {
+                print("User id: \(user.uid)")
+                
+                SessionManager.shared.loginUser(userId: user.uid) { success in
+                    if success {
+                        self.navigateToHomeScreen = true
+                    } else {
+                        SessionManager.shared.logoutUser()
+                        self.showAlert(message: "Failed to log in.")
+                    }
+                }
+            } else {
+                self.showAlert(message: "Please verify your email before siging in")
+            }
+        }
+    }
+    func showAlert(message: String) {
+        showalert = true
+        AlertMsg = message
     }
 }
 

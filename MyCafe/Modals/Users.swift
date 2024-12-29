@@ -31,3 +31,12 @@ struct Users: Identifiable, Decodable {
         ]
     }
 }
+struct SessionUsers : Identifiable,Codable {
+        var id: String
+        var username: String
+        var email: String
+        var bio: String
+        var profilepicture: String?
+        var notification = false
+     
+}

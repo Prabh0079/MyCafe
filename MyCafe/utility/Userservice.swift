@@ -38,5 +38,45 @@ class UserService: ObservableObject {
             
         }
     }
+    func fetchUserByUserID(withId id: String, completion: @escaping(SessionUsers?) -> Void) {
+        let userRef = reference.child(_collection)
+        
+        userRef.child(id)
+            .observeSingleEvent(of: .value) { snapshot in
+                if snapshot.exists() {
+                    print("SnapShot exists \(snapshot)")
+                    
+                    if let userData = snapshot.value as? [String: Any]
+                    {
+                        let isProfileDeleted = userData["Profile Deleted"] as? Bool ?? false
+                        
+                        if !isProfileDeleted {
+                            let username = userData["username"] as? String ?? ""
+                            let email = userData["email"] as? String ?? ""
+                            let bio = userData["bio"] as? String ?? ""
+                            let notification = userData["notification"] as? Bool ?? true
+                            let profilepicture = userData["profilepicture"] as? String ?? ""
+                            
+                            let user = SessionUsers(id: id,
+                                                    username: username,
+                                                    email: email,
+                                                    bio: bio,
+                                                    profilepicture: profilepicture
+                                                )
+                            completion(user)
+                        } else {
+                            print("No user found")
+                            completion(nil)
+                        }
+                    } else {
+                        print("Failed to parse for: \(id)")
+                        completion(nil)
+                    }
+                } else {
+                    print("No user found for:\(id)")
+                    completion(nil)
+                }
+            }
+    }
     
 }

@@ -100,11 +100,13 @@ struct SignUp: View {
                     Text("Got a Profile")
                         .italic()
                     
-                    NavigationLink(destination: Splashscreen(), isActive: $navigateToSignIn){
+                    NavigationLink(destination: SignIn()){
                         Text("Sign In")
                             .foregroundStyle(.brown)
                             .bold()
                     }
+                    .navigationBarBackButtonHidden(true)
+                    .navigationBarHidden(true)
                 }
                 Spacer()
                 
@@ -116,6 +118,8 @@ struct SignUp: View {
                             .foregroundColor(.brown)
                     }
                 }
+                .navigationBarBackButtonHidden(true)
+                .navigationBarHidden(true)
             }
             .padding()
         }

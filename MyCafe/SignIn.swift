@@ -36,7 +36,7 @@ struct SignIn: View {
                 Text("Behind every successful person is good amount of coffee. So choose"
                      + " best grains, finest roast, the most powerful flavor....")
                 .font(.system(size: 16))
-                .padding(10)
+                .padding(.top,10)
                 .padding(.horizontal,15)
                 
                 VStack {
@@ -70,6 +70,8 @@ struct SignIn: View {
                                 .foregroundColor(.brown)
                                 .underline()
                         }
+                        .navigationBarBackButtonHidden(true)
+                        .navigationBarHidden(true)
                     }
                     Button(action:{loginUser()})
                     {
@@ -89,6 +91,8 @@ struct SignIn: View {
                                 .foregroundColor(.brown)
                                 .underline()
                         }
+                        .navigationBarBackButtonHidden(true)
+                        .navigationBarHidden(true)
                     }
                     Spacer()
                 }

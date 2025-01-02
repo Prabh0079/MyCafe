@@ -26,6 +26,10 @@ struct ForgotPassword: View {
                 Text("Reset Password")
                     .font(.largeTitle)
                     .bold()
+                    .padding(.bottom,20)
+                
+                Text("Enater your email address to receive a link to reset your password")
+                    .padding(.bottom,20)
                 
                 VStack {
                     TextField("Email Address",text: $email)
@@ -33,7 +37,7 @@ struct ForgotPassword: View {
                             .background(.gray.opacity(0.5))
                             .cornerRadius(10)
                     
-                    Button(action:{}){
+                    Button(action:{resetPassword()}){
                         Text("Reset")
                             .padding()
                             .frame(maxWidth: .infinity)
@@ -48,10 +52,38 @@ struct ForgotPassword: View {
                             .foregroundColor(.brown)
                             .padding()
                     }
+                    .navigationBarBackButtonHidden(true)
+                    .navigationBarHidden(true)
                 }
-                .padding()
+            }
+            .padding()
+            .alert(isPresented: $showalert) {
+                Alert(
+                    title: Text("Notification"),
+                    message: Text(alertMsg),
+                    dismissButton: .default(Text("Ok"))
+                )
             }
         }
+    }
+    private func resetPassword() {
+        guard !email.trimmingCharacters(in: .whitespaces).isEmpty else {
+            showAlert(message: "Email is required")
+            return
+        }
+        Auth.auth().sendPasswordReset(withEmail: email) { error in
+            if let error = error {
+                showAlert(message: "Failed to send reset email: \(error.localizedDescription)")
+            } else {
+                showAlert(message: "Check your email to reset your password")
+                navigateToSignIn = true
+            }
+        }
+    }
+ 
+    private func showAlert(message: String) {
+        alertMsg = message
+        showalert = true
     }
 }
 

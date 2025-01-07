@@ -6,10 +6,12 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct HomePage: View {
     @State var userName: String = ""
     @State var sessionManager = SessionManager.shared
+    @State var navigateToSignIn: Bool = false
     
     var body: some View {
         NavigationStack{
@@ -25,6 +27,17 @@ struct HomePage: View {
                 }
                 .navigationBarBackButtonHidden(true)
                 .navigationBarHidden(true)
+                
+                Button(action:{
+                    SessionManager.shared.logoutUser()
+                    navigateToSignIn = true})
+                {
+                    Text("Logout")
+                }
+                NavigationLink(destination: SignIn(), isActive: $navigateToSignIn) {
+                    EmptyView()
+                }
+                              
             }
         }
     }

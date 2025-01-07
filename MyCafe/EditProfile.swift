@@ -6,12 +6,14 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct EditProfile: View {
     @State var username: String = ""
     @State var email: String = ""
-    
     @State var navigateToProfile: Bool = false
+    @State var alertMsg: String = ""
+    @State var showAlert: Bool = false
     
     @State var sessionManager = SessionManager.shared
     var userService = UserService()
@@ -32,7 +34,7 @@ struct EditProfile: View {
                     
                     TextField("User Name", text: $username)
                         .onAppear {username = currentUser.username}
-                        .padding(12)
+                        .padding()
                         .background(Color.gray.opacity(0.5))
                         .cornerRadius(10)
                 }
@@ -41,10 +43,12 @@ struct EditProfile: View {
                     get: {sessionManager.getCurrentUser()?.email ?? ""},
                     set: {_ in }
                 ))
-                    .padding(10)
+                    .padding()
                     .background(Color.gray.opacity(0.5))
                     .cornerRadius(10)
                     .disabled(true)
+                
+              
                 
                 Button(action:{saveProfile()})
                 {
@@ -56,16 +60,32 @@ struct EditProfile: View {
                         .cornerRadius(10)
                 }
                 .padding(.vertical, 15)
+                
                 NavigationLink(destination: HomePage(), isActive: $navigateToProfile) {
                     EmptyView()
                 }
+                NavigationLink(destination: HomePage()) {
+                    Text("Change Password")
+                        .foregroundColor(.white)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.black.opacity(0.6))
+                        .cornerRadius(10)
+                }
+                
             }
             .padding()
             .onAppear {
                 updatedProfile()
             }
+            .alert(alertMsg, isPresented: $showAlert) {
+                Button("Ok", role: .cancel)
+                { }
+            }
         }
+        .navigationBarBackButtonHidden(true)
     }
+    
     
     func updatedProfile()
     {
@@ -76,6 +96,7 @@ struct EditProfile: View {
     func saveProfile()
     {
         guard let currentuser = sessionManager.getCurrentUser() else { return }
+        guard let user = Auth.auth().currentUser else { return }
         
         if username !=  currentuser.username{
             userService.updateName(userId: currentuser.id, userName: username){ Result in
@@ -90,6 +111,12 @@ struct EditProfile: View {
         } else {
             navigateToProfile = true
         }
+        
+    }
+    
+    func showAlert(message: String) {
+        alertMsg = message
+        showAlert = true
     }
 }
 

@@ -14,9 +14,7 @@ struct Users: Identifiable, Decodable {
     var userId: String
     var username: String
     var email: String
-    var bio: String?
     var creation = Utils.getCurrentDateTime()
-    var profilepicture: String?
     var notification = false
     
     func toDictionary() -> [String: Any] {
@@ -24,9 +22,7 @@ struct Users: Identifiable, Decodable {
             "userId": userId,
             "username": username,
             "email": email,
-            "bio": bio ?? "",
             "creation": creation,
-            "profilepicture": profilepicture,
             "notification": notification
         ]
     }
@@ -35,8 +31,6 @@ struct SessionUsers : Identifiable,Codable {
         var id: String
         var username: String
         var email: String
-        var bio: String
-        var profilepicture: String?
         var notification = false
      
 }

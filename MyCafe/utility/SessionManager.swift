@@ -37,4 +37,15 @@ class SessionManager: ObservableObject {
             print(error.localizedDescription)
         }
     }
+    
+    func getCurrentUser() -> SessionUsers? {
+        return currentUser
+    }
+    
+    func updateUserInfo(username: String) {
+        if var currentUser = currentUser {
+            currentUser.username = username
+            self.currentUser = currentUser
+        }
+    }
 }

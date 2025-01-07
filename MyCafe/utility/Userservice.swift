@@ -53,15 +53,11 @@ class UserService: ObservableObject {
                         if !isProfileDeleted {
                             let username = userData["username"] as? String ?? ""
                             let email = userData["email"] as? String ?? ""
-                            let bio = userData["bio"] as? String ?? ""
                             let notification = userData["notification"] as? Bool ?? true
-                            let profilepicture = userData["profilepicture"] as? String ?? ""
                             
                             let user = SessionUsers(id: id,
                                                     username: username,
-                                                    email: email,
-                                                    bio: bio,
-                                                    profilepicture: profilepicture
+                                                    email: email
                                                 )
                             completion(user)
                         } else {
@@ -77,6 +73,19 @@ class UserService: ObservableObject {
                     completion(nil)
                 }
             }
+    }
+    
+    func updateName(userId: String, userName: String, completion: @escaping(Result<Void, UserServiceError>)  -> Void) {
+        let updates: [String: Any] = [
+            "username": userName
+        ]
+        reference.child(_collection).child(userId).updateChildValues(updates) { error, _ in
+            if let error = error {
+                completion(.failure(.databaseError(error.localizedDescription)))
+            } else {
+                completion(.success(()))
+            }
+        }
     }
     
 }

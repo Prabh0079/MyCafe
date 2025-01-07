@@ -107,7 +107,7 @@ struct SignIn: View {
             }
             .fullScreenCover(isPresented: $navigateToHomeScreen)
             {
-                Splashscreen()
+                HomePage()
                     .onDisappear {
                         navigateToHomeScreen = false
                     }

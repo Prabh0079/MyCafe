@@ -110,7 +110,7 @@ struct SignUp: View {
                 }
                 Spacer()
                 
-                NavigationLink(destination: Splashscreen()) {
+                NavigationLink(destination: PrivacyPolicy()) {
                     HStack {
                         Text("By registering, I acknowledge that I have read and accept all terms and conditions of use and the ")
                             .foregroundColor(.black)

@@ -59,12 +59,26 @@ struct EditProfile: View {
                         .background(Color.black.opacity(0.6))
                         .cornerRadius(10)
                 }
-                .padding(.vertical, 15)
+                .padding(.vertical, 20)
                 
                 NavigationLink(destination: HomePage(), isActive: $navigateToProfile) {
                     EmptyView()
                 }
-                NavigationLink(destination: HomePage()) {
+                .navigationBarBackButtonHidden(true)
+                
+                Button(action:{saveProfile()})
+                {
+                    Text("Delete Profile")
+                        .foregroundColor(.white)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.black.opacity(0.6))
+                        .cornerRadius(10)
+                }
+                .padding(.bottom, 15)
+             
+                
+                NavigationLink(destination: ChangePassword()) {
                     Text("Change Password")
                         .foregroundColor(.white)
                         .padding()
@@ -72,7 +86,7 @@ struct EditProfile: View {
                         .background(Color.black.opacity(0.6))
                         .cornerRadius(10)
                 }
-                
+                .navigationBarBackButtonHidden(true)
             }
             .padding()
             .onAppear {

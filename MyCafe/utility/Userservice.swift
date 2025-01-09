@@ -88,4 +88,39 @@ class UserService: ObservableObject {
         }
     }
     
+    func deleteProfile() {
+        if let user = Auth.auth().currentUser {
+            let userId = user.uid
+            let ref = Database.database().reference().child(_collection).child(userId)
+            
+            ref.child("profileDeleted").setValue(true) { error, _ in
+                if let error = error {
+                    print(error.localizedDescription)
+                } else {
+                    print("Profile Deleted")
+                    
+                    user.delete { error  in
+                        if let error = error {
+                            print(error.localizedDescription)
+                        } else {
+                            print("Profile Deleted")
+                            
+                            do {
+                                try Auth.auth().signOut()
+                            } catch {
+                                print(error.localizedDescription)
+                            }
+                            
+                        }
+                    }
+                    
+                }
+            }
+        } else {
+            print("User not found")
+        }
+        
+    }
+    
+    
 }

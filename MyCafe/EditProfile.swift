@@ -14,6 +14,8 @@ struct EditProfile: View {
     @State var navigateToProfile: Bool = false
     @State var alertMsg: String = ""
     @State var showAlert: Bool = false
+    @State var moveToSignIn: Bool = false
+    @State var isLiggedOut: Bool = false
     
     @State var sessionManager = SessionManager.shared
     var userService = UserService()
@@ -64,19 +66,6 @@ struct EditProfile: View {
                 NavigationLink(destination: HomePage(), isActive: $navigateToProfile) {
                     EmptyView()
                 }
-                .navigationBarBackButtonHidden(true)
-                
-                Button(action:{saveProfile()})
-                {
-                    Text("Delete Profile")
-                        .foregroundColor(.white)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.black.opacity(0.6))
-                        .cornerRadius(10)
-                }
-                .padding(.bottom, 15)
-             
                 
                 NavigationLink(destination: ChangePassword()) {
                     Text("Change Password")
@@ -86,15 +75,49 @@ struct EditProfile: View {
                         .background(Color.black.opacity(0.6))
                         .cornerRadius(10)
                 }
-                .navigationBarBackButtonHidden(true)
+                .padding(.bottom, 15)
+                
+                Button(action:{
+                    SessionManager.shared.logoutUser()
+                    moveToSignIn = true
+                }) {
+                    Text("Log Out")
+                        .foregroundColor(.white)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.black.opacity(0.6))
+                        .cornerRadius(10)
+                }
+                .padding(.bottom, 15)
+                
+                NavigationLink(destination: SignIn(), isActive: $moveToSignIn) {
+                    EmptyView()
+                }
+                
+                Button(action:{showAlert = true})
+                {
+                    Text("Delete Profile")
+                        .foregroundColor(.white)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.black.opacity(0.6))
+                        .cornerRadius(10)
+                }
+                .alert("Are you sure to delete???", isPresented: $showAlert) {
+                    Button("Yes") {
+                        userService.deleteProfile()
+                        sessionManager.logoutUser()
+                        moveToSignIn = true
+                    }
+                    Button("No", role: .cancel){}
+                }
+             
+                
+             
             }
             .padding()
             .onAppear {
                 updatedProfile()
-            }
-            .alert(alertMsg, isPresented: $showAlert) {
-                Button("Ok", role: .cancel)
-                { }
             }
         }
         .navigationBarBackButtonHidden(true)
@@ -110,7 +133,7 @@ struct EditProfile: View {
     func saveProfile()
     {
         guard let currentuser = sessionManager.getCurrentUser() else { return }
-        guard let user = Auth.auth().currentUser else { return }
+     //   guard let user = Auth.auth().currentUser else { return }
         
         if username !=  currentuser.username{
             userService.updateName(userId: currentuser.id, userName: username){ Result in
@@ -125,6 +148,10 @@ struct EditProfile: View {
         } else {
             navigateToProfile = true
         }
+        
+    }
+    
+    func deleteProfile() {
         
     }
     

@@ -126,12 +126,12 @@ struct SignUp: View {
     //.frame(width: .infinity, height: .infinity)
         .alert(isPresented: $showalert)
             {
-                Alert(title: Text("Registration Error"),
+                Alert(title: Text("Registration.."),
                       message: Text(alertMsg),
                       dismissButton: .default(Text("Ok")))
             }
             .navigationDestination(isPresented: $navigateToSignIn){
-                Splashscreen()
+                SignIn()
             }
         }
     }

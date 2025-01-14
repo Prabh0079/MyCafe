@@ -4,12 +4,13 @@ import FirebaseAuth
 
 struct ContentView: View {
     @State private var showSplash: Bool = true
+    @State private var selectedTab = 0
     @State var sessionManager = SessionManager.shared
     
     var body: some View {
         ZStack {
                 if sessionManager.isLoggedIn {
-                    HomePage()
+                    BottomNavigation(selectionTab: selectedTab)
                         .transition(.opacity)
                 } else {
                     SignIn()
@@ -40,6 +41,8 @@ struct ContentView: View {
                     print("Not success")
                 }
             }
+        } else {
+            sessionManager.logoutUser()
         }
     }
 }

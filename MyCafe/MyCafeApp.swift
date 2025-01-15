@@ -10,6 +10,7 @@ import Firebase
 
 @main
 struct MyCafeApp: App {
+
     init () {
         FirebaseApp.configure()
     }

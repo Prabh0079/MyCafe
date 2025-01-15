@@ -100,8 +100,11 @@ struct ChangePassword: View {
             {
                 EmptyView()
             }
+            .navigationBarBackButtonHidden(true)
+            .navigationBarHidden(true)
         }
-     
+        .navigationBarBackButtonHidden(true)
+        .navigationBarHidden(true)
     }
     
     func showAlert(message: String) {

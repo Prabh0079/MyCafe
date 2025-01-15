@@ -6,64 +6,26 @@
 //
 
 import SwiftUI
+import Firebase
 import FirebaseAuth
 
 struct HomePage: View {
-    
-    @State private var searchText = ""
-    @State private var selectedTab = 0
+    @StateObject private var coffeeViewModel = CoffeeViewModel()
     @StateObject var cartManager = CartManager()
-    let currentDate = Date()
     
-    @State var userName: String = ""
-    @State var sessionManager = SessionManager.shared
-    @State var navigateToSignIn: Bool = false
-    
-    let hotCoffees = [
-        CoffeeType(name: "Espresso", imageName: "Espresso", price: 2.99),
-        CoffeeType(name: "Cappuccino", imageName: "cappicino", price: 3.99),
-        CoffeeType(name: "Latte", imageName: "latte", price: 4.99),
-        CoffeeType(name: "Macchiato", imageName: "mocha", price: 5.99)
-    ]
-    let coldCoffees = [
-        CoffeeType(name: "Iced-Coffe", imageName: "IceCafe", price: 2.99),
-        CoffeeType(name: "Ice-Latte", imageName: "IceLatte", price: 4.29),
-        CoffeeType(name: "Cold Brew", imageName: "ColdBrew", price: 4.59),
-        CoffeeType(name: "Iced Mocha", imageName: "IcedMocha", price: 6.99)
-    ]
-    
-    var filteredCoffees: [CoffeeType] {
-        let coffees = selectedTab == 0 ? hotCoffees : coldCoffees
-        if searchText.isEmpty {
-            return coffees
-        } else {
-            return coffees.filter{ $0.name.lowercased().contains(searchText.lowercased()) }
-        }
-    }
-    
-    let gridItems = [GridItem(.flexible()), GridItem(.flexible())]
-    
+    var gridItems = [GridItem(.flexible()), GridItem(.flexible())]
+
     var body: some View {
-        NavigationStack{
+        NavigationView {
             VStack {
-                let currentUser = sessionManager.getCurrentUser()
-                HStack {
-                    Text(formattedDate(currentDate))
-                    Spacer()
-                    Text(formattedTime(currentDate))
-                }
-                .padding()
-                .bold()
-                
-                Text("Welcome \(currentUser?.username ?? " " )")
-                    .font(.title)
-                    .bold()
                 Text("It's a Great Day for Coffee..")
-                    .font(.subheadline)
-                    .bold()
+                    .font(.title)
+                    .fontWeight(.bold)
+                    .padding(.top, 40)
                 
+                // Search Bar
                 HStack {
-                    TextField("Search for your Favourite Coffee..", text: $searchText)
+                    TextField("Search for your Favourite Coffee..", text: $coffeeViewModel.searchText)
                         .foregroundColor(.brown)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .padding(.vertical, 10)
@@ -76,7 +38,8 @@ struct HomePage: View {
                 .cornerRadius(10)
                 .padding()
                 
-                Picker("Coffee Type", selection: $selectedTab) {
+                // Coffee Picker (Hot or Cold)
+                Picker("Coffee Type", selection: $coffeeViewModel.selectedTab) {
                     Text("Hot Coffee").tag(0)
                     Text("Cold Coffee").tag(1)
                 }
@@ -84,18 +47,18 @@ struct HomePage: View {
                 .padding(.horizontal)
                 .padding(.top, 10)
                 
+                // Coffee Grid
                 ScrollView {
                     LazyVGrid(columns: gridItems, spacing: 20) {
-                        ForEach(filteredCoffees) { coffee in
-                            
-                            NavigationLink(destination: CoffeeDetailView())
-                            {
+                        ForEach(coffeeViewModel.filteredCoffees) { coffee in
+                            NavigationLink(destination: CoffeeDetailView(coffee: coffee, cartManager: cartManager)) {
                                 VStack {
                                     Image(coffee.imageName)
                                         .resizable()
                                         .scaledToFit()
                                         .frame(width: 120, height: 120)
                                         .cornerRadius(8)
+                                    
                                     Text(coffee.name)
                                         .font(.headline)
                                         .padding(.top, 8)
@@ -111,28 +74,54 @@ struct HomePage: View {
                     }
                     .padding(.top, 10)
                 }
+                .navigationTitle("")
             }
+            .padding()
+        }
+    }
+}
+
+struct HomePage_Previews: PreviewProvider {
+    static var previews: some View {
+        HomePage()
+    }
+}
+
+
+class CoffeeViewModel: ObservableObject {
+    @Published var hotCoffees: [CoffeeType] = [
+        CoffeeType(name: "Espresso", imageName: "Espresso", price: 2.99),
+        CoffeeType(name: "Cappuccino", imageName: "cappicino", price: 3.99),
+        CoffeeType(name: "Latte", imageName: "latte", price: 4.99),
+        CoffeeType(name: "Macchiato", imageName: "mocha", price: 5.99)
+    ]
+    
+    @Published var coldCoffees: [CoffeeType] = [
+        CoffeeType(name: "Iced-Coffe", imageName: "IceCafe", price: 2.99),
+        CoffeeType(name: "Ice-Latte", imageName: "IceLatte", price: 4.29),
+        CoffeeType(name: "Cold Brew", imageName: "ColdBrew", price: 4.59),
+        CoffeeType(name: "Iced Mocha", imageName: "IcedMocha", price: 6.99)
+    ]
+    
+    @Published var searchText: String = ""
+    @Published var selectedTab: Int = 0
+
+    // Computed property to get filtered coffee list
+    var filteredCoffees: [CoffeeType] {
+        let coffees = selectedTab == 0 ? hotCoffees : coldCoffees
+        return searchText.isEmpty ? coffees : coffees.filter {
+            $0.name.lowercased().contains(searchText.lowercased())
         }
     }
     
-    func formattedDate(_ date: Date) -> String {
-            let dateFormatter = DateFormatter()
-            
-            dateFormatter.dateFormat = "dd MMM"
-            let dateString = dateFormatter.string(from: date)
-            
-            return "\(dateString)"
-        }
-    func formattedTime(_ date: Date) -> String {
-            let dateFormatter = DateFormatter()
-
-            dateFormatter.dateFormat = "hh:mm "
-            let timeString = dateFormatter.string(from: date)
-            
-            return "\(timeString)"
-        }
+    // Method to change the selected tab
+    func switchTab(to tab: Int) {
+        selectedTab = tab
+    }
+    
+    // Method to update the search text
+    func updateSearchText(_ text: String) {
+        searchText = text
+    }
 }
 
-#Preview {
-    HomePage()
-}

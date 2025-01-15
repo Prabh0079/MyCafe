@@ -18,7 +18,7 @@ struct BottomNavigation: View {
                 }
                 .tag(0)
             
-            EditProfile()
+            CartView()
                 .tabItem {
                     Image(systemName: "cart")
                 }

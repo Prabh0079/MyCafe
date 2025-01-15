@@ -16,6 +16,7 @@ struct SignIn: View {
     @State var showalert: Bool = false
     @State var AlertMsg: String = ""
     @State var navigateToHomeScreen: Bool = false
+    @StateObject private var cartManager = CartManager()
     
     var body: some View {
         NavigationStack {
@@ -107,7 +108,8 @@ struct SignIn: View {
             }
             .fullScreenCover(isPresented: $navigateToHomeScreen)
             {
-                HomePage()
+                BottomNavigation(selectionTab: 0)
+                    .environmentObject(cartManager)
                     .onDisappear {
                         navigateToHomeScreen = false
                     }

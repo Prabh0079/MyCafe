@@ -6,12 +6,15 @@ struct ContentView: View {
     @State private var showSplash: Bool = true
     @State private var selectedTab = 0
     @State var sessionManager = SessionManager.shared
+    @StateObject private var cartManager = CartManager()
+    
     
     var body: some View {
         ZStack {
                 if sessionManager.isLoggedIn {
-                    BottomNavigation(selectionTab: selectedTab)
-                        .transition(.opacity)
+                    BottomNavigation(selectionTab: 0)
+                        .environmentObject(cartManager)
+                    
                 } else {
                     SignIn()
                         .opacity(showSplash ? 0 : 1)

@@ -66,6 +66,8 @@ struct EditProfile: View {
                 NavigationLink(destination: HomePage(), isActive: $navigateToProfile) {
                     EmptyView()
                 }
+                .navigationBarBackButtonHidden(true)
+                .navigationBarHidden(true)
                 
                 NavigationLink(destination: ChangePassword()) {
                     Text("Change Password")
@@ -75,6 +77,8 @@ struct EditProfile: View {
                         .background(Color.black.opacity(0.6))
                         .cornerRadius(10)
                 }
+                .navigationBarBackButtonHidden(true)
+                .navigationBarHidden(true)
                 .padding(.bottom, 15)
                 
                 Button(action:{
@@ -93,6 +97,8 @@ struct EditProfile: View {
                 NavigationLink(destination: SignIn(), isActive: $moveToSignIn) {
                     EmptyView()
                 }
+                .navigationBarBackButtonHidden(true)
+                .navigationBarHidden(true)
                 
                 Button(action:{showAlert = true})
                 {
@@ -121,6 +127,7 @@ struct EditProfile: View {
             }
         }
         .navigationBarBackButtonHidden(true)
+        .navigationBarHidden(true)
     }
     
     

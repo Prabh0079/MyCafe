@@ -1,10 +1,3 @@
-//
-//  HomePage.swift
-//  MyCafe
-//
-//  Created by User on 07/01/2025.
-//
-
 import SwiftUI
 import Firebase
 import FirebaseAuth
@@ -14,70 +7,114 @@ struct HomePage: View {
     @StateObject var cartManager = CartManager()
     
     var gridItems = [GridItem(.flexible()), GridItem(.flexible())]
-
+    
+    @State private var temperature: String? = nil
+    @State private var errorMessage: String? = nil
+    
+    private let apiKey = "f64bf0682e08dc140031412b5a1c04ff"
+    
     var body: some View {
         NavigationView {
             VStack {
-                Text("It's a Great Day for Coffee..")
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .padding(.top, 40)
-                
-                // Search Bar
-                HStack {
-                    TextField("Search for your Favourite Coffee..", text: $coffeeViewModel.searchText)
-                        .foregroundColor(.brown)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .padding(.vertical, 10)
-                        .padding(.leading)
-                    
-                    Image(systemName: "magnifyingglass")
-                        .padding(.trailing)
-                }
-                .background(Color(.systemGray5))
-                .cornerRadius(10)
-                .padding()
-                
-                // Coffee Picker (Hot or Cold)
-                Picker("Coffee Type", selection: $coffeeViewModel.selectedTab) {
-                    Text("Hot Coffee").tag(0)
-                    Text("Cold Coffee").tag(1)
-                }
-                .pickerStyle(SegmentedPickerStyle())
-                .padding(.horizontal)
-                .padding(.top, 10)
-                
-                // Coffee Grid
-                ScrollView {
-                    LazyVGrid(columns: gridItems, spacing: 20) {
-                        ForEach(coffeeViewModel.filteredCoffees) { coffee in
-                            NavigationLink(destination: CoffeeDetailView(coffee: coffee, cartManager: cartManager)) {
-                                VStack {
-                                    Image(coffee.imageName)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 120, height: 120)
-                                        .cornerRadius(8)
-                                    
-                                    Text(coffee.name)
-                                        .font(.headline)
-                                        .padding(.top, 8)
-                                        .foregroundColor(.brown)
-                                    
-                                    Text(String(format: "$%.2f", coffee.price))
-                                        .font(.subheadline)
-                                        .foregroundColor(.brown)
-                                }
-                                .padding(.horizontal)
-                            }
+                    HStack {
+                        Text(.now, style: .time)
+                            .padding()
+                        Spacer()
+                        if let temp = temperature {
+                            Text(temp)
+                                .font(.subheadline)
+                                .padding()
                         }
                     }
+                    
+                    Text("It's a Great Day for Coffee..")
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .padding(.top, 20)
+                    
+                    HStack {
+                        TextField("Search for your Favourite Coffee..", text: $coffeeViewModel.searchText)
+                            .foregroundColor(.brown)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .padding(.vertical, 10)
+                            .padding(.leading)
+                        
+                        Image(systemName: "magnifyingglass")
+                            .padding(.trailing)
+                    }
+                    .background(Color(.systemGray5))
+                    .cornerRadius(10)
+                    .padding()
+                    
+                    // Coffee Picker (Hot or Cold)
+                    Picker("Coffee Type", selection: $coffeeViewModel.selectedTab) {
+                        Text("Hot Coffee").tag(0)
+                        Text("Cold Coffee").tag(1)
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
+                    .padding(.horizontal)
                     .padding(.top, 10)
-                }
-                .navigationTitle("")
+                    
+                    // Coffee Grid
+                    ScrollView {
+                        LazyVGrid(columns: gridItems, spacing: 20) {
+                            ForEach(coffeeViewModel.filteredCoffees) { coffee in
+                                NavigationLink(destination: CoffeeDetailView(coffee: coffee, cartManager: cartManager)) {
+                                    VStack {
+                                        Image(coffee.imageName)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 120, height: 120)
+                                            .cornerRadius(8)
+                                        
+                                        Text(coffee.name)
+                                            .font(.headline)
+                                            .padding(.top, 8)
+                                            .foregroundColor(.brown)
+                                        
+                                        Text(String(format: "$%.2f", coffee.price))
+                                            .font(.subheadline)
+                                            .foregroundColor(.brown)
+                                    }
+                                    .padding(.horizontal)
+                                }
+                            }
+                        }
+                        .padding(.top, 10)
+                    }
+                    .navigationTitle("")
+              
             }
-            .padding()
+            .onAppear {
+                fetchWeatherData(for: "Montreal")
+            }
         }
+    }
+    
+    private func fetchWeatherData(for location: String) {
+        let apiUrl = "https://api.openweathermap.org/data/2.5/weather?q=\(location)&appid=\(apiKey)"
+        
+        guard let url = URL(string: apiUrl) else { return }
+        
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            DispatchQueue.main.async {
+                guard let data = data else {
+                    errorMessage = "No data received from the server."
+                    return
+                }
+                
+                do {
+                    // Parse the JSON response
+                    let weatherData = try JSONDecoder().decode(WeatherResponse.self, from: data)
+                    let temp = weatherData.main.temp - 273.15 // Convert from Kelvin to Celsius
+                    temperature = String(format: "%.0f °C", temp)
+                    errorMessage = nil
+                } catch {
+                    errorMessage = "Failed to parse weather data."
+                }
+            }
+        }
+        .resume()
     }
 }
 
@@ -86,7 +123,6 @@ struct HomePage_Previews: PreviewProvider {
         HomePage()
     }
 }
-
 
 class CoffeeViewModel: ObservableObject {
     @Published var hotCoffees: [CoffeeType] = [
@@ -125,3 +161,10 @@ class CoffeeViewModel: ObservableObject {
     }
 }
 
+struct WeatherResponse: Codable {
+    let main: Main
+}
+
+struct Main: Codable {
+    let temp: Double
+}
